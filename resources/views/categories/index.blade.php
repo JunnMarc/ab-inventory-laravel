@@ -10,7 +10,7 @@
                     </a>
                 </div>
             </div>
-        </div>
+        </div>~
     @else
         <x-slot name="header">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -53,6 +53,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="mt-4">
+                            {{ $categories->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

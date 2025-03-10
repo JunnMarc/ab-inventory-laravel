@@ -6,8 +6,13 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller {
-    public function index() {
-        $employees = Employee::all();
+    public function index(Request $request) {
+        $search = $request->input('search');
+    
+        $employees = Employee::where('employee_fname', 'LIKE', "%{$search}%")
+                             ->orWhere('employee_lname', 'LIKE', "%{$search}%")
+                             ->paginate(10);
+    
         return view('employees.index', compact('employees'));
     }
     public function create()

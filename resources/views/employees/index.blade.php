@@ -21,9 +21,16 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="mb-4">
-                        <a href="{{ route('employees.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            {{ __('Add Employee') }}
-                        </a>
+                        <div class="flex justify-between items-center">
+                            <a href="{{ route('employees.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Employee</a>
+                        
+                            <form action="{{ route('employees.index') }}" method="GET" class="flex items-center">
+                                <input type="text" name="search" placeholder="Search Employee..." value="{{ request('search') }}"
+                                    class="border p-2 rounded mr-2">
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+                            </form>
+                        </div>
+                        {{ $employees->links() }}
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -49,11 +56,13 @@
                                             <x-alert-delete route="{{ route('employees.destroy', $employee->employee_id) }}" message="Are you sure you want to delete this employee?" />
                                         </div>
                                     </td>
-                                    
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="mt-4">
+                            {{ $employees->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

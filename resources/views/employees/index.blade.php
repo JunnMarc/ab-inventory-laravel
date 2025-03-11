@@ -37,27 +37,32 @@
                             <thead class="bg-gray-200 text-black dark:bg-gray-700 dark:text-white">
                                 <tr>
                                     <th class="px-4 py-3 border-b text-left">ID</th>
-                                    <th class="px-4 py-3 border-b text-left">First Name</th>
-                                    <th class="px-4 py-3 border-b text-left">Last Name</th>
+                                    <th class="px-4 py-3 border-b text-left">Employee Name</th>
+                                    <th class="px-4 py-3 border-b text-left">Email</th>
+                                    <th class="px-4 py-3 border-b text-left">Phone</th>
+                                    <th class="px-4 py-3 border-b text-left">Position</th>
                                     <th class="px-4 py-3 border-b text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white">
                                 @foreach ($employees as $employee)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-4 py-3">{{ $employee->employee_id }}</td>
-                                    <td class="px-4 py-3">{{ $employee->employee_fname }}</td>
-                                    <td class="px-4 py-3">{{  $employee->employee_lname }}</td>
-                                    <td class="px-4 py-3 text-center col-auto">
+                                    <td class="px-4 py-3">{{ $employee->id }}</td>
+                                    <td class="px-4 py-3">{{ $employee->employee_name }}</td>
+                                    <td class="px-4 py-3">{{ $employee->employee_email }}</td>
+                                    <td class="px-4 py-3">{{ $employee->employee_phone }}</td>
+                                    <td class="px-4 py-3">{{ $employee->position }}</td>
+                                    <td class="px-4 py-3 text-center">
                                         <div class="flex gap-2 justify-center">
-                                            <a href="{{ route('employees.edit', $employee->employee_id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
+                                            <a href="{{ route('employees.edit', $employee->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
                                                 {{ __('Edit') }}
                                             </a>
-                                            <x-alert-delete route="{{ route('employees.destroy', $employee->employee_id) }}" message="Are you sure you want to delete this employee?" />
+                                            <x-alert-delete route="{{ route('employees.destroy', $employee->id) }}" message="Are you sure you want to delete this employee?" />
                                         </div>
                                     </td>
                                 </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
                         <div class="mt-4">

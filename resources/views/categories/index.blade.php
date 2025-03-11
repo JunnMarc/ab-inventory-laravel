@@ -39,14 +39,14 @@
                             <tbody class="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white">
                                 @foreach ($categories as $category)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-4 py-3">{{ $category->category_id }}</td>
+                                    <td class="px-4 py-3">{{ $category->id }}</td>
                                     <td class="px-4 py-3">{{ $category->category_name }}</td>
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex gap-2 justify-center"> 
-                                            <a href="{{ route('categories.edit', $category->category_id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
+                                            <a href="{{ route('categories.edit', $category->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
                                                 {{ __('Edit') }}
                                             </a>                                   
-                                            <x-alert-delete route="{{ route('categories.destroy', $category->category_id) }}" message="Are you sure you want to delete this category?" />
+                                            <x-alert-delete route="{{ route('categories.destroy', $category->id) }}" message="Are you sure you want to delete this category?" />
                                         </div>
                                     </td>
                                 </tr>

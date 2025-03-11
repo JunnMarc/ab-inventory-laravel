@@ -5,19 +5,35 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 
-class EmployeeController extends Controller {
-    public function index(Request $request) {
-        $search = $request->input('search');
-    
-        $employees = Employee::where('employee_fname', 'LIKE', "%{$search}%")
-                             ->orWhere('employee_lname', 'LIKE', "%{$search}%")
-                             ->paginate(10);
-    
+class EmployeeController extends Controller
+{
+    public function index()
+    {
+        $search = request('search');
+        $employees = Employee::when($search, function ($query, $search) {
+            return $query->where('employee_name', 'like', "%$search%");
+        })->paginate(10);
+
         return view('employees.index', compact('employees'));
     }
+
     public function create()
     {
-        return view('employees.create'); 
+        return view('employees.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'employee_name' => 'required|string|max:100',
+            'employee_email' => 'required|email|max:50|unique:employees',
+            'employee_phone' => 'nullable|string|max:20',
+            'position' => 'required|string|max:50',
+        ]);
+
+        Employee::create($validated);
+
+        return redirect()->route('employees.index')->with('success', 'Employee added successfully.');
     }
 
     public function edit(Employee $employee)
@@ -25,43 +41,23 @@ class EmployeeController extends Controller {
         return view('employees.edit', compact('employee'));
     }
 
-    public function store(Request $request) {
+    public function update(Request $request, Employee $employee)
+    {
         $validated = $request->validate([
-            'employee_fname' => 'required|string|max:100',
-            'employee_lname' => 'required|string|max:100',
-        ]);
-    
-        // ✅ Actually insert data into the database
-        Employee::create([
-            'employee_fname' => $validated['employee_fname'],
-            'employee_lname' => $validated['employee_lname'],
-        ]);
-    
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
-    }
-    
-
-    public function show($id) {
-        return Employee::findOrFail($id); // Find employee by ID
-    }
-
-    public function update(Request $request, $id) {
-        $validated = $request->validate([
-            'employee_fname' => 'required|string|max:100',
-            'employee_lname' => 'required|string|max:100',
+            'employee_name' => 'required|string|max:100',
+            'employee_email' => 'required|email|max:50|unique:employees,employee_email,' . $employee->id,
+            'employee_phone' => 'nullable|string|max:20',
+            'position' => 'required|string|max:50',
         ]);
 
-        $employee = Employee::findOrFail($id);
         $employee->update($validated);
 
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
 
-    public function destroy($id) {
-        $employee = Employee::findOrFail($id);
+    public function destroy(Employee $employee)
+    {
         $employee->delete();
-
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
     }
 }
-

@@ -13,15 +13,15 @@ return new class extends Migration {
             BEGIN
                 DECLARE next_id INT;
 
-                -- Find the next available category_id
-                SELECT COALESCE(MIN(c.category_id + 1), 1) INTO next_id
+                -- Find the next available id
+                SELECT COALESCE(MIN(c.id + 1), 1) INTO next_id
                 FROM Categories c
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM Categories WHERE category_id = c.category_id + 1
+                    SELECT 1 FROM Categories WHERE id = c.id + 1
                 );
 
-                -- Assign the next available category_id
-                SET NEW.category_id = next_id;
+                -- Assign the next available id
+                SET NEW.id = next_id;
             END;
         ");
 
@@ -33,15 +33,15 @@ return new class extends Migration {
             BEGIN
                 DECLARE next_id INT;
 
-                -- Find the next available product_id
-                SELECT COALESCE(MIN(t1.product_id + 1), 1) INTO next_id
+                -- Find the next available id
+                SELECT COALESCE(MIN(t1.id + 1), 1) INTO next_id
                 FROM Products t1
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM Products t2 WHERE t2.product_id = t1.product_id + 1
+                    SELECT 1 FROM Products t2 WHERE t2.id = t1.id + 1
                 );
 
-                -- Assign the next available product_id
-                SET NEW.product_id = next_id;
+                -- Assign the next available id
+                SET NEW.id = next_id;
             END;
         ");
     }

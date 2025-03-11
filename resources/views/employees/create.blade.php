@@ -12,15 +12,32 @@
                     <form method="POST" action="{{ route('employees.store') }}">
                         @csrf
 
-                        <!-- Category Name -->
+                        <!-- Employee Name -->
                         <div class="mb-4">
-                            <x-input-label for="employee_fname" :value="__('First Name')" />
-                            <x-text-input id="employee_fname" type="text" name="employee_fname" class="block mt-1 w-full" required />
+                            <x-input-label for="employee_name" :value="__('Full Name')" />
+                            <x-text-input id="employee_name" type="text" name="employee_name" class="block mt-1 w-full" required />
+                            @error('employee_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
+                        <!-- Employee Email -->
                         <div class="mb-4">
-                            <x-input-label for="employee_lname" :value="__('Last Name')" />
-                            <x-text-input id="employee_lname" type="text" name="employee_lname" class="block mt-1 w-full" required />
+                            <x-input-label for="employee_email" :value="__('Email')" />
+                            <x-text-input id="employee_email" type="email" name="employee_email" class="block mt-1 w-full" required />
+                            @error('employee_email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Employee Phone -->
+                        <div class="mb-4">
+                            <x-input-label for="employee_phone" :value="__('Phone Number')" />
+                            <x-text-input id="employee_phone" type="text" name="employee_phone" class="block mt-1 w-full" />
+                            @error('employee_phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Position -->
+                        <div class="mb-4">
+                            <x-input-label for="position" :value="__('Position')" />
+                            <x-text-input id="position" type="text" name="position" class="block mt-1 w-full" required />
+                            @error('position') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Buttons -->

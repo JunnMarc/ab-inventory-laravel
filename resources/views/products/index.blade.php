@@ -38,15 +38,15 @@
                             <tbody class="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white">
                                 @foreach ($products as $product)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-4 py-3">{{ $product->product_id }}</td>
+                                    <td class="px-4 py-3">{{ $product->id }}</td>
                                     <td class="px-4 py-3">{{ $product->product_name }}</td>
                                     <td class="px-4 py-3">{{  $product->category->category_name ?? 'Uncategorized' }}</td>
                                     <td class="px-4 py-3 text-center col-auto">
                                         <div class="flex gap-2 justify-center">
-                                            <a href="{{ route('products.edit', $product->product_id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
+                                            <a href="{{ route('products.edit', $product->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded text-sm">
                                                 {{ __('Edit') }}
                                             </a>
-                                            <x-alert-delete route="{{ route('products.destroy', $product->product_id) }}" message="Are you sure you want to delete this product?" />
+                                            <x-alert-delete route="{{ route('products.destroy', $product->id) }}" message="Are you sure you want to delete this product?" />
                                         </div>
                                     </td>
                                     

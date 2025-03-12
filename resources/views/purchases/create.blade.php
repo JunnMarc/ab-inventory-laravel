@@ -1,136 +1,139 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create Purchase') }}
-        </h2>
-    </x-slot>
+    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">🛒 Create Purchase</h2>
 
-    <div class="py-6">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <form action="{{ route('purchases.store') }}" method="POST">
-                    @csrf
+        <form id="purchase-form" action="{{ route('purchases.store') }}" method="POST">
+            @csrf
 
-                    <!-- Purchase Date, Supplier, Employee, Reference -->
-                    <div class="grid grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Purchase Date *</label>
-                            <input type="date" name="purchase_date" class="w-full border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-600">Purchase Date *</label>
+                    <input type="date" name="purchase_date" required 
+                           class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+                </div>
 
-                        <!-- Supplier Selection -->
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Supplier *</label>
-                            <select name="supplier_id" class="w-full border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" required>
-                                <option value="">Select Supplier</option>
-                                @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->suppliers_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Employee Selection -->
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Recorded By (Employee) *</label>
-                            <select name="employee_id" class="w-full border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" required>
-                                <option value="">Select Employee</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->employee_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Reference Field -->
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Reference</label>
-                            <input type="text" name="reference" class="w-full border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-
-                    <!-- Product Table -->
-                    <div class="border rounded-lg overflow-hidden">
-                        <table class="w-full bg-white border border-gray-200">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="py-2 px-4 border">Product</th>
-                                    <th class="py-2 px-4 border">Quantity</th>
-                                    <th class="py-2 px-4 border">Price</th>
-                                    <th class="py-2 px-4 border">Total</th>
-                                    <th class="py-2 px-4 border">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="purchase-items">
-                                <tr>
-                                    <td class="py-2 px-4 border">
-                                        <select name="products[]" class="w-full border-gray-300 rounded-lg p-2">
-                                            <option value="">-- Choose Product --</option>
-                                            @foreach ($products as $product)
-                                                <option value="{{ $product->id }}">{{ $product->product_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td class="py-2 px-4 border">
-                                        <input type="number" name="quantities[]" class="w-full border-gray-300 rounded-lg p-2 text-center" value="1" min="1">
-                                    </td>
-                                    <td class="py-2 px-4 border">
-                                        <input type="number" name="prices[]" class="w-full border-gray-300 rounded-lg p-2 text-center" value="0" min="0">
-                                    </td>
-                                    <td class="py-2 px-4 border text-center">0</td>
-                                    <td class="py-2 px-4 border text-center">
-                                        <button type="button" class="text-red-500" onclick="removeRow(this)">🗑</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Add Row Button -->
-                    <div class="mt-4 flex justify-end">
-                        <button type="button" class="bg-green-500 text-white px-4 py-2 rounded" onclick="addRow()">+</button>
-                    </div>
-
-                    <!-- Summary Section -->
-                    <div class="mt-6 flex justify-between items-center">
-                        <div class="text-lg font-semibold">Subtotal:</div>
-                        <div class="text-lg font-semibold">₱0.00</div>
-                    </div>
-
-                    <div class="mt-4 flex justify-end">
-                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded">Purchase</button>
-                    </div>
-                </form>
+                <div>
+                    <label class="block text-gray-600">Supplier *</label>
+                    <select name="supplier_id" required 
+                            class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+                        <option value="">Select Supplier</option>
+                        @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}">{{ $supplier->suppliers_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-600">Recorded By (Employee) *</label>
+                    <select name="employee_id" required 
+                            class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+                        <option value="">Select Employee</option>
+                        @foreach($employees as $employee)
+                            <option value="{{ $employee->id }}">{{ $employee->employee_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-600">Reference</label>
+                    <input type="text" name="reference" 
+                           class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+                </div>
+            </div>
+
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">📦 Purchase Items</h3>
+
+                <table class="w-full border">
+                    <thead class="bg-blue-500 text-white">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Product</th>
+                            <th class="px-4 py-2 text-left">Quantity</th>
+                            <th class="px-4 py-2 text-left">Price</th>
+                            <th class="px-4 py-2 text-left">Total</th>
+                            <th class="px-4 py-2 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchase-items">
+                        <tr class="purchase-item">
+                            <td class="px-4 py-2">
+                                <select name="product_id[]" required class="product-select w-full px-2 py-1 border rounded">
+                                    <option value="">-- Choose Product --</option>
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->id }}" data-price="{{ $product->buying_price }}">
+                                            {{ $product->product_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-4 py-2">
+                                <input type="number" name="quantity[]" value="1" min="1" required 
+                                       class="quantity-input w-full px-2 py-1 border rounded">
+                            </td>
+                            <td class="px-4 py-2">
+                                <input type="text" name="price[]" value="0" readonly 
+                                       class="price-input w-full px-2 py-1 border rounded bg-gray-200">
+                            </td>
+                            <td class="px-4 py-2">
+                                <input type="text" name="total[]" value="0" readonly 
+                                       class="total-input w-full px-2 py-1 border rounded bg-gray-200">
+                            </td>
+                            <td class="px-4 py-2 text-center">
+                                <button type="button" class="remove-item px-2 py-1 bg-red-500 text-white rounded">🗑</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button type="button" id="add-item" class="mt-3 px-4 py-2 bg-green-500 text-white rounded">➕ Add Product</button>
+            </div>
+
+            <div class="text-right text-lg font-semibold text-gray-700 mb-4">
+                Subtotal: <span id="subtotal">₱0.00</span>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg">💰 Purchase</button>
+            </div>
+        </form>
     </div>
 
     <script>
-        function addRow() {
-            let table = document.getElementById("purchase-items");
-            let row = table.insertRow();
-            row.innerHTML = `
-                <td class="py-2 px-4 border">
-                    <select name="products[]" class="w-full border-gray-300 rounded-lg p-2">
-                        <option value="">-- Choose Product --</option>
-                        @foreach ($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->product_name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td class="py-2 px-4 border">
-                    <input type="number" name="quantities[]" class="w-full border-gray-300 rounded-lg p-2 text-center" value="1" min="1">
-                </td>
-                <td class="py-2 px-4 border">
-                    <input type="number" name="prices[]" class="w-full border-gray-300 rounded-lg p-2 text-center" value="0" min="0">
-                </td>
-                <td class="py-2 px-4 border text-center">0</td>
-                <td class="py-2 px-4 border text-center">
-                    <button type="button" class="text-red-500" onclick="removeRow(this)">🗑</button>
-                </td>
-            `;
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const purchaseItems = document.getElementById('purchase-items');
+            const subtotalElement = document.getElementById('subtotal');
 
-        function removeRow(button) {
-            button.closest("tr").remove();
-        }
+            function updateTotals() {
+                let subtotal = 0;
+                document.querySelectorAll('.purchase-item').forEach(row => {
+                    const price = parseFloat(row.querySelector('.price-input').value) || 0;
+                    const quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+                    const total = price * quantity;
+                    row.querySelector('.total-input').value = total.toFixed(2);
+                    subtotal += total;
+                });
+                subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+            }
+
+            purchaseItems.addEventListener('change', function(e) {
+                if (e.target.classList.contains('product-select')) {
+                    const selectedOption = e.target.selectedOptions[0];
+                    const price = selectedOption.dataset.price || 0;
+                    const row = e.target.closest('.purchase-item');
+                    
+                    row.querySelector('.price-input').value = price;
+                    row.querySelector('.total-input').value = (price * row.querySelector('.quantity-input').value).toFixed(2);
+                    
+                    updateTotals();
+                } else if (e.target.classList.contains('quantity-input')) {
+                    updateTotals();
+                }
+            });
+
+            updateTotals();
+        });
+
     </script>
 </x-app-layout>

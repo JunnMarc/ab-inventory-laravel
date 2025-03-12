@@ -30,7 +30,7 @@
                             @foreach ($purchases as $purchase)
                             <tr class="border-b">
                                 <td class="py-2 px-4 border">{{ $purchase->purchase_date }}</td>
-                                <td class="py-2 px-4 border">{{ $purchase->supplier->name }}</td>
+                                <td class="py-2 px-4 border">{{ $purchase->supplier->suppliers_name }}</td>
                                 <td class="py-2 px-4 border">{{ $purchase->reference }}</td>
                                 <td class="py-2 px-4 border">{{ $purchase->details->sum('quantity') }}</td>
                                 <td class="py-2 px-4 border flex space-x-2">

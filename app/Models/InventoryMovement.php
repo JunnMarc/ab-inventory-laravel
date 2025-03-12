@@ -10,14 +10,29 @@ class InventoryMovement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', 
+        'product_id',
         'employee_id',
         'supplier_id',
-        'date',
         'balance_forwarded',
         'pull_out',
         'new_balance',
         'new_luto',
-        'total_inventory',
+        'total_inventory'
     ];
+
+    // Define relationships
+    public function product()
+    {
+        return $this->belongsTo(Products::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }

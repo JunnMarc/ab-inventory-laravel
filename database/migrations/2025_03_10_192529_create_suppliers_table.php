@@ -9,11 +9,11 @@ return new class extends Migration {
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('suppliers_name'); // Supplier name
-            $table->string('suppliers_company')->nullable(); // Supplier company
-            $table->string('suppliers_email')->unique()->nullable(); // Email
-            $table->string('suppliers_phone')->nullable(); // Phone number
-            $table->text('suppliers_address')->nullable(); // Address
+            $table->string('suppliers_name'); 
+            $table->string('suppliers_company')->nullable();
+            $table->string('suppliers_email')->unique()->nullable(); 
+            $table->string('suppliers_phone')->nullable();
+            $table->text('suppliers_address')->nullable();
             $table->timestamps();
         });
     }

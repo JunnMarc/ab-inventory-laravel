@@ -4,21 +4,20 @@
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
-
-    <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        
+    
+    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Cards Section -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <x-card 
                 title="Sales Report" 
                 description="View the latest sales trends."
-                link="#" 
+                link="{{ route('inventory.sales') }}" 
                 color="blue" />
 
             <x-card 
                 title="Inventory Status" 
                 description="Check stock levels and inventory."
-                link="#" 
+                link="{{ route('inventory.status') }}" 
                 color="green" />
 
             <x-card 
@@ -34,44 +33,35 @@
                 color="red" />
         </div>
 
-        <!-- Additional Content -->
-        <div class="mt-10 bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4">Recent Transactions</h3>
-
-            <!-- Example Table -->
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse border border-gray-300 dark:border-gray-700">
-                    <thead>
-                        <tr class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">#</th>
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Transaction</th>
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Amount</th>
-                            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border border-gray-300 dark:border-gray-600 dark:text-white">
-                            <td class="px-4 py-2">1</td>
-                            <td class="px-4 py-2">Bakery Purchase</td>
-                            <td class="px-4 py-2">$120.50</td>
-                            <td class="px-4 py-2">March 10, 2025</td>
-                        </tr>
-                        <tr class="border border-gray-300 dark:border-gray-600 dark:text-white">
-                            <td class="px-4 py-2">2</td>
-                            <td class="px-4 py-2">Wholesale Order</td>
-                            <td class="px-4 py-2">$450.00</td>
-                            <td class="px-4 py-2">March 9, 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6">
-                <a href="{{ route('transactions.create') }}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                    {{ __('Create New Transaction') }}
-                </a>
-            </div>
+        <div class='py-6 max-w-7xl mx-auto sm:px-6 lg:px-1'>
+            @if($lowStockAlerts->isNotEmpty())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg">
+                    <h2 class="text-lg font-semibold mb-4 text-red-800">⚠️ Low Stock Alerts</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-red-500 to-red-700 text-white">
+                                    <th class="px-4 py-2 text-left">Product</th>
+                                    <th class="px-4 py-2 text-left">Category</th>
+                                    <th class="px-4 py-2 text-left">Current Stock</th>
+                                    <th class="px-4 py-2 text-left">Stock Alert Threshold</th>
+                                    <th class="px-4 py-2 text-left">Stock Deficit</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($lowStockAlerts as $alert)
+                                    <tr class="hover:bg-gray-100 transition">
+                                        <td class="px-4 py-3 font-semibold">{{ $alert->product_name }}</td>
+                                        <td class="px-4 py-3">{{ $alert->category_name }}</td>
+                                        <td class="px-4 py-3 font-semibold text-red-600">{{ $alert->current_stock }}</td>
+                                        <td class="px-4 py-3 font-semibold text-gray-600">{{ $alert->stock_alert_threshold }}</td>
+                                        <td class="px-4 py-3 font-semibold text-yellow-600">{{ $alert->stock_deficit }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
         </div>
-
-    </div>
 </x-app-layout>

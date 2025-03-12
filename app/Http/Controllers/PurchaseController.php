@@ -3,23 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Purchase;
 use App\Models\InventoryMovement;
 use App\Models\Products;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\PurchaseDetail;
+use function Symfony\Component\Clock\now;
 
 class PurchaseController extends Controller
 {
-    // 🟢 LIST ALL PURCHASES
     public function index()
     {
         $purchases = Purchase::with(['supplier', 'details.product'])->latest()->paginate(10);
         return view('purchases.index', compact('purchases'));
     }
 
-    // 🟢 SHOW PURCHASE CREATION FORM
     public function create()
     {
         $suppliers = Supplier::all(); 
@@ -28,64 +29,65 @@ class PurchaseController extends Controller
         return view('purchases.create', compact('suppliers', 'products', 'employees'));
     }
 
-    // 🟢 STORE NEW PURCHASE
     public function store(Request $request)
     {
-        $request->validate([
-            'purchase_date' => 'required|date',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'employee_id' => 'required|exists:employees,id',
-            'products' => 'required|array',
-            'quantities' => 'required|array',
-            'prices' => 'required|array'
-        ]);
+        DB::beginTransaction();
 
-        // Create a new Purchase record
-        $purchase = Purchase::create([
-            'purchase_date' => $request->purchase_date,
-            'supplier_id' => $request->supplier_id,
-            'reference' => $request->reference,
-        ]);
-
-        foreach ($request->products as $index => $productId) {
-            $quantity = $request->quantities[$index];
-            $price = $request->prices[$index];
-
-            // Add purchase details
-            $purchase->details()->create([
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'price' => $price,
-                'total' => $quantity * $price
+        try {
+            $request->validate([
+                'purchase_date' => 'required|date',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'employee_id' => 'required|exists:employees,id',
+                'product_id' => 'required|array',
+                'quantity' => 'required|array',
+                'price' => 'required|array'
             ]);
 
-            
-            $product = Products::find($productId);
-            // Update Inventory Movements (STACK IN)
-            // InventoryMovement::create([
-            //     'product_id' => $productId,
-            //     'employee_id' => $request->employee_id,
-            //     'supplier_id' => $request->supplier_id,
-            //     'date' => now(),
-            //     'new_luto' => $quantity,
-            //     'pull_out' => 0, 
-            // ]);
+            $purchase = Purchase::create([
+                'purchase_date' => $request->purchase_date,
+                'supplier_id' => $request->supplier_id,
+                'reference' => $request->reference,
+            ]);
 
-            // Update Product Stock
-            $product->increment('quantity', $quantity);
+            foreach ($request->product_id as $index => $productId) {
+                $quantity = $request->quantity[$index];
+                $price = $request->price[$index];
+
+                PurchaseDetail::create([
+                    'purchase_id' => $purchase->id,
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'total' => $quantity * $price
+                ]);
+
+                $product = Products::find($productId);
+                if ($product) {
+                    $product->increment('quantity', $quantity);
+                }
+
+                InventoryMovement::updateOrCreate(
+                    ['product_id' => $productId],
+                    ['date' => now(), 'pull_out' => 0]
+                );
+            }
+
+            DB::commit();
+            return redirect()->route('dashboard')->with('success', 'Purchase added successfully & Inventory Updated');
+
+        } catch (\Exception $e) {
+            Log::error('Purchase Save Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-
-        return redirect()->route('purchases.index')->with('success', 'Purchase added successfully & Inventory Updated');
     }
 
-    // 🟢 SHOW A SINGLE PURCHASE
+
     public function show($id)
     {
         $purchase = Purchase::with(['supplier', 'details.product'])->findOrFail($id);
         return view('purchases.show', compact('purchase'));
     }
 
-    // 🟢 SHOW EDIT FORM
     public function edit($id)
     {
         $purchase = Purchase::with('details')->findOrFail($id);
@@ -94,7 +96,6 @@ class PurchaseController extends Controller
         return view('purchases.edit', compact('purchase', 'suppliers', 'products'));
     }
 
-    // 🟢 UPDATE PURCHASE
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -112,14 +113,12 @@ class PurchaseController extends Controller
             'reference' => $request->reference,
         ]);
 
-        // Delete old purchase details
         PurchaseDetail::where('purchase_id', $id)->delete();
 
         foreach ($request->products as $index => $productId) {
             $quantity = $request->quantities[$index];
             $price = $request->prices[$index];
 
-            // Add updated purchase details
             $purchase->details()->create([
                 'product_id' => $productId,
                 'quantity' => $quantity,
@@ -131,7 +130,7 @@ class PurchaseController extends Controller
         return redirect()->route('purchases.index')->with('success', 'Purchase updated successfully');
     }
 
-    // 🟢 DELETE PURCHASE
+
     public function destroy($id)
     {
         $purchase = Purchase::findOrFail($id);

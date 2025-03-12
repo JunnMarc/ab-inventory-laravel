@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\InventoryMovement;
-use App\Models\Product;
 use App\Models\Employee;
 use App\Models\Products;
 
@@ -12,9 +11,9 @@ class InventoryMovementsController extends Controller
 {
     public function index()
     {
-        $movements = InventoryMovement::with(['product', 'employee', 'supplier'])->latest()->paginate(10);
+        $movements = InventoryMovement::with(['product', 'employee', 'supplier'])->latest()->get(); 
         $employees = Employee::all();
-        $products = Products::all();
+        $products = Products::all(); // Use Product, not Products
 
         return view('inventory_movements.index', compact('movements', 'employees', 'products'));
     }
@@ -36,5 +35,14 @@ class InventoryMovementsController extends Controller
 
         return redirect()->route('inventory_movements.index')->with('success', 'Inventory movement recorded.');
     }
+
+    public function destroy($id)
+    {
+        $movement = InventoryMovement::findOrFail($id);
+        $movement->delete();
+        
+        return redirect()->route('inventory.status')->with('success', 'Inventory Movement Deleted!');
+    }
+
 }
 

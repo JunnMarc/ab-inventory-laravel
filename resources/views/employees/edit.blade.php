@@ -9,25 +9,46 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form method="POST" action="{{ route('employees.update', $employee->employee_id) }}"">
+                    <form method="POST" action="{{ route('employees.update', $employee->id) }}">
                         @csrf
                         @method('PUT')
 
-                        <!-- Category Name -->
+                        <!-- Employee Name -->
                         <div class="mb-4">
-                            <x-input-label for="employee_fname" :value="__('First Name')" />
-                            <x-text-input id="employee_fname" type="text" name="employee_fname" class="block mt-1 w-full" value="{{ old('employee_fname', $employee->employee_fname) }}" required />
+                            <x-input-label for="employee_name" :value="__('Full Name')" />
+                            <x-text-input id="employee_name" type="text" name="employee_name" class="block mt-1 w-full" 
+                                value="{{ old('employee_name', $employee->employee_name) }}" required />
+                            @error('employee_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
+                        <!-- Employee Email -->
                         <div class="mb-4">
-                            <x-input-label for="employee_lname" :value="__('Last Name')" />
-                            <x-text-input id="employee_lname" type="text" name="employee_lname" class="block mt-1 w-full" value="{{ old('employee_lname', $employee->employee_lname) }}" required />
+                            <x-input-label for="employee_email" :value="__('Email')" />
+                            <x-text-input id="employee_email" type="email" name="employee_email" class="block mt-1 w-full" 
+                                value="{{ old('employee_email', $employee->employee_email) }}" required />
+                            @error('employee_email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Employee Phone -->
+                        <div class="mb-4">
+                            <x-input-label for="employee_phone" :value="__('Phone Number')" />
+                            <x-text-input id="employee_phone" type="text" name="employee_phone" class="block mt-1 w-full" 
+                                value="{{ old('employee_phone', $employee->employee_phone) }}" />
+                            @error('employee_phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Position -->
+                        <div class="mb-4">
+                            <x-input-label for="position" :value="__('Position')" />
+                            <x-text-input id="position" type="text" name="position" class="block mt-1 w-full" 
+                                value="{{ old('position', $employee->position) }}" required />
+                            @error('position') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Buttons -->
                         <div class="text-end">
                             <x-primary-button type="submit">
-                                {{ __('Save') }}
+                                {{ __('Update') }}
                             </x-primary-button>
                             <x-secondary-button type="button" onclick="window.location='{{ route('employees.index') }}'">
                                 {{ __('Cancel') }}

@@ -20,12 +20,13 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="mb-4">
-                        <a href="{{ route('products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            {{ __('Add Product') }}
-                        </a>
-                    </div>
                     <div class="overflow-x-auto">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Product List</h2>
+                            <a href="{{ route('products.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">
+                                + Add Product
+                            </a>
+                        </div>
                         <table class="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg">
                             <thead class="bg-gray-200 text-black dark:bg-gray-700 dark:text-white">
                                 <tr>

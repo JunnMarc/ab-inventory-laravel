@@ -5,13 +5,7 @@
         <form id="purchase-form" action="{{ route('purchases.store') }}" method="POST">
             @csrf
 
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-gray-600">Purchase Date *</label>
-                    <input type="date" name="purchase_date" required 
-                           class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
-                </div>
-
+            <div class="grid grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-gray-600">Supplier *</label>
                     <select name="supplier_id" required 
@@ -37,8 +31,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-gray-600">Reference</label>
-                    <input type="text" name="reference" 
+                    <label class="block text-gray-600">Reference *</label>
+                    <input type="text" name="reference" required
                            class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
                 </div>
             </div>
@@ -103,8 +97,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const purchaseItems = document.getElementById('purchase-items');
+            const addItemButton = document.getElementById('add-item');
             const subtotalElement = document.getElementById('subtotal');
-
+    
             function updateTotals() {
                 let subtotal = 0;
                 document.querySelectorAll('.purchase-item').forEach(row => {
@@ -116,7 +111,57 @@
                 });
                 subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
             }
-
+    
+            
+            function createNewRow() {
+                const newRow = document.createElement('tr');
+                newRow.classList.add('purchase-item');
+    
+                newRow.innerHTML = `
+                    <td class="px-4 py-2">
+                        <select name="product_id[]" required class="product-select w-full px-2 py-1 border rounded">
+                            <option value="">-- Choose Product --</option>
+                            @foreach($products as $product)
+                                <option value="{{ $product->id }}" data-price="{{ $product->buying_price }}">
+                                    {{ $product->product_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td class="px-4 py-2">
+                        <input type="number" name="quantity[]" value="1" min="1" required 
+                               class="quantity-input w-full px-2 py-1 border rounded">
+                    </td>
+                    <td class="px-4 py-2">
+                        <input type="text" name="price[]" value="0" readonly 
+                               class="price-input w-full px-2 py-1 border rounded bg-gray-200">
+                    </td>
+                    <td class="px-4 py-2">
+                        <input type="text" name="total[]" value="0" readonly 
+                               class="total-input w-full px-2 py-1 border rounded bg-gray-200">
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <button type="button" class="remove-item px-2 py-1 bg-red-500 text-white rounded">🗑</button>
+                    </td>
+                `;
+    
+                purchaseItems.appendChild(newRow);
+            }
+    
+           
+            addItemButton.addEventListener('click', function() {
+                createNewRow();
+            });
+    
+            
+            purchaseItems.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-item')) {
+                    e.target.closest('.purchase-item').remove();
+                    updateTotals();
+                }
+            });
+    
+            // Update total when product or quantity changes
             purchaseItems.addEventListener('change', function(e) {
                 if (e.target.classList.contains('product-select')) {
                     const selectedOption = e.target.selectedOptions[0];
@@ -131,9 +176,10 @@
                     updateTotals();
                 }
             });
-
-            updateTotals();
+    
+            updateTotals(); // Initialize total calculation
         });
-
     </script>
+    
+           
 </x-app-layout>

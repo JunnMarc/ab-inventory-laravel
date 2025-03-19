@@ -5,12 +5,7 @@
         <form id="order-form" action="{{ route('orders.store') }}" method="POST">
             @csrf
 
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-gray-600">Order Date *</label>
-                    <input type="date" name="order_date" required 
-                           class="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300">
-                </div>
+            <div class="grid grid-cols-1 gap-4 mb-4">
 
                 <div>
                     <label class="block text-gray-600">Customer *</label>
@@ -67,15 +62,18 @@
                                         class="product-select w-full px-2 py-1 border rounded">
                                     <option value="">-- Choose Product --</option>
                                     @foreach($products as $product)
-                                        <option value="{{ $product->id }}" data-price="{{ $product->selling_price }}">
+                                        <option value="{{ $product->id }}" 
+                                                data-price="{{ $product->selling_price }}" 
+                                                data-stock="{{ $product->quantity }}">
                                             {{ $product->product_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </td>
-                            <td class="px-4 py-2">
+                            <td class="px-4 py-2 relative">
                                 <input type="number" name="quantity[]" value="1" min="1" required 
                                        class="quantity-input w-full px-2 py-1 border rounded">
+                                <p class="text-sm text-red-500 hidden error-message">❌ Not enough stock!</p>
                             </td>
                             <td class="px-4 py-2">
                                 <input type="text" name="price[]" value="0" readonly 
@@ -100,7 +98,7 @@
             </div>
 
             <div class="text-right">
-                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg">🛍 Place Order</button>
+                <button type="submit" id="submit-order" class="px-6 py-2 bg-blue-500 text-white rounded-lg">🛍 Place Order</button>
             </div>
         </form>
     </div>
@@ -108,51 +106,102 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const orderItems = document.getElementById('order-items');
+            const addItemButton = document.getElementById('add-item');
             const subtotalElement = document.getElementById('subtotal');
-
+            const submitButton = document.getElementById('submit-order');
+    
             function updateTotals() {
                 let subtotal = 0;
+                let isValid = true;
+    
                 document.querySelectorAll('.order-item').forEach(row => {
-                    const price = parseFloat(row.querySelector('.price-input').value) || 0;
-                    const quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+                    const productSelect = row.querySelector('.product-select');
+                    const selectedOption = productSelect.selectedOptions[0];
+                    const priceInput = row.querySelector('.price-input');
+                    const quantityInput = row.querySelector('.quantity-input');
+                    const totalInput = row.querySelector('.total-input');
+                    const errorMessage = row.querySelector('.error-message');
+    
+                    if (!selectedOption || selectedOption.value === "") {
+                        priceInput.value = "0";
+                        totalInput.value = "0";
+                        errorMessage.classList.add('hidden');
+                        return;
+                    }
+    
+                    const price = parseFloat(selectedOption.dataset.price) || 0;
+                    const stock = parseInt(selectedOption.dataset.stock) || 0;
+                    const quantity = parseInt(quantityInput.value) || 0;
                     const total = price * quantity;
-                    row.querySelector('.total-input').value = total.toFixed(2);
+    
+                    priceInput.value = price;
+                    totalInput.value = total.toFixed(2);
                     subtotal += total;
+    
+                    if (quantity > stock) {
+                        errorMessage.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        errorMessage.classList.add('hidden');
+                    }
                 });
+    
                 subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+                submitButton.disabled = !isValid;
             }
-
-            document.getElementById('add-item').addEventListener('click', function() {
-                const newRow = orderItems.querySelector('.order-item').cloneNode(true);
-                newRow.querySelector('.product-select').value = "";
-                newRow.querySelector('.quantity-input').value = 1;
-                newRow.querySelector('.price-input').value = 0;
-                newRow.querySelector('.total-input').value = 0;
-                newRow.querySelector('.remove-item').addEventListener('click', function() {
-                    newRow.remove();
-                    updateTotals();
-                });
+    
+            addItemButton.addEventListener('click', function() {
+                const newRow = document.createElement('tr');
+                newRow.classList.add('order-item');
+    
+                newRow.innerHTML = `
+                    <td class="px-4 py-2">
+                        <select name="product_id[]" required 
+                                class="product-select w-full px-2 py-1 border rounded">
+                            <option value="">-- Choose Product --</option>
+                            @foreach($products as $product)
+                                <option value="{{ $product->id }}" 
+                                        data-price="{{ $product->selling_price }}" 
+                                        data-stock="{{ $product->quantity }}">
+                                    {{ $product->product_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td class="px-4 py-2 relative">
+                        <input type="number" name="quantity[]" value="1" min="1" required 
+                               class="quantity-input w-full px-2 py-1 border rounded">
+                        <p class="text-sm text-red-500 hidden error-message">❌ Not enough stock!</p>
+                    </td>
+                    <td class="px-4 py-2">
+                        <input type="text" name="price[]" value="0" readonly 
+                               class="price-input w-full px-2 py-1 border rounded bg-gray-200">
+                    </td>
+                    <td class="px-4 py-2">
+                        <input type="text" name="total[]" value="0" readonly 
+                               class="total-input w-full px-2 py-1 border rounded bg-gray-200">
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <button type="button" class="remove-item px-2 py-1 bg-red-500 text-white rounded">🗑</button>
+                    </td>
+                `;
+    
                 orderItems.appendChild(newRow);
+                updateTotals();
             });
-
-            orderItems.addEventListener('change', function(e) {
-                if (e.target.classList.contains('product-select')) {
-                    const price = e.target.selectedOptions[0].dataset.price || 0;
-                    const row = e.target.closest('.order-item');
-                    row.querySelector('.price-input').value = price;
-                    updateTotals();
-                } else if (e.target.classList.contains('quantity-input')) {
+            orderItems.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-item')) {
+                    e.target.closest('.order-item').remove();
                     updateTotals();
                 }
             });
-
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', function() {
-                    this.closest('.order-item').remove();
+    
+            orderItems.addEventListener('change', function(e) {
+                if (e.target.classList.contains('product-select') || e.target.classList.contains('quantity-input')) {
                     updateTotals();
-                });
+                }
             });
-
+    
             updateTotals();
         });
     </script>

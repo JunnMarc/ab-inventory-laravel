@@ -33,9 +33,13 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
 
+        $request->merge([
+            'purchase_date' => now()->format('Y-m-d H:i:s')
+        ]);
+
         try {
-            $request->validate([
-                'purchase_date' => 'required|date',
+            $validatedData = $request->validate([
+                'purchase_date' => 'date_format:Y-m-d H:i:s',
                 'supplier_id' => 'required|exists:suppliers,id',
                 'employee_id' => 'required|exists:employees,id',
                 'product_id' => 'required|array',
@@ -43,9 +47,14 @@ class PurchaseController extends Controller
                 'price' => 'required|array'
             ]);
 
+            if (!$validatedData) {
+                return redirect()->back()->withErrors($validatedData)->withInput();
+            }
+
             $purchase = Purchase::create([
                 'purchase_date' => $request->purchase_date,
                 'supplier_id' => $request->supplier_id,
+                'employee_id' => $request->employee_id,
                 'reference' => $request->reference,
             ]);
 
@@ -73,18 +82,20 @@ class PurchaseController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('dashboard')->with('success', 'Purchase added successfully & Inventory Updated');
+            return redirect()->route('dashboard')->with('success', 'Purchase added successfully');
 
         } catch (\Exception $e) {
+            DB::rollback();
             Log::error('Purchase Save Error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
 
 
+
     public function show($id)
     {
-        $purchase = Purchase::with(['supplier', 'details.product'])->findOrFail($id);
+        $purchase = Purchase::with(['supplier', 'employee', 'details.product'])->findOrFail($id);
         return view('purchases.show', compact('purchase'));
     }
 

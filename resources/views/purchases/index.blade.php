@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Purchase List') }}
+            {{ __('Purchases') }}
         </h2>
     </x-slot>
 
@@ -35,7 +35,7 @@
                                 <td class="py-2 px-4 border">{{ $purchase->details->sum('quantity') }}</td>
                                 <td class="py-2 px-4 border flex space-x-2">
                                     <a href="{{ route('purchases.show', $purchase->id) }}" class="text-blue-500">View</a>
-                                    <a href="{{ route('purchases.edit', $purchase->id) }}" class="text-yellow-500">Edit</a>
+                                    {{-- <a href="{{ route('purchases.edit', $purchase->id) }}" class="text-yellow-500">Edit</a> --}}
                                     <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                         @csrf
                                         @method('DELETE')

@@ -26,7 +26,7 @@ class OrderController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'employee_id' => 'required|exists:employees,id',
-            'order_date' => 'required|date',
+            'order_date' => NOW(),
             'payment_type' => 'required|in:Cash,Card,Online',
             'product_id' => 'required|array',
             'product_id.*' => 'required|exists:products,id',
@@ -35,42 +35,57 @@ class OrderController extends Controller
             'price' => 'required|array',
             'price.*' => 'required|numeric|min:0',
         ]);
-    
-        // Initialize total calculations
-        $totalProducts = 0;
-        $totalPrice = 0;
-    
-        foreach ($request->product_id as $index => $productId) {
-            $quantity = $request->quantity[$index];
-            $price = $request->price[$index];
-            $totalPrice += $quantity * $price;
-            $totalProducts += $quantity;
-        }
 
-        $date = Carbon::parse($request->order_date)->format('Y-m-d');
-    
-        // Now include total_products in the order creation
-        $order = Order::create([
-            'customer_id' => $request->customer_id,
-            'employee_id' => $request->employee_id,
-            'order_date' => $date,
-            'total' => $totalPrice, 
-            'total_products' => $totalProducts,
-        ]);
-    
-        // Insert order details
-        foreach ($request->product_id as $index => $productId) {
-            OrderDetail::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'unit_cost' => $price,
-                'total' => $quantity * $price,
-            ]);;
+        \DB::beginTransaction();
+
+        try {
+            $totalProducts = 0;
+            $totalPrice = 0;
+
+            foreach ($request->product_id as $index => $productId) {
+                $totalProducts += $request->quantity[$index];
+                $totalPrice += $request->quantity[$index] * $request->price[$index];
+            }
+
+            $order = Order::create([
+                'customer_id' => $request->customer_id,
+                'employee_id' => $request->employee_id,
+                'order_date' => now(),
+                'total' => $totalPrice,
+                'total_products' => $totalProducts,
+            ]);
+
+            foreach ($request->product_id as $index => $productId) {
+                OrderDetail::create([
+                    'order_id' => $order->id,
+                    'product_id' => $productId,
+                    'quantity' => $request->quantity[$index],
+                    'unit_cost' => $request->price[$index],
+                    'total' => $request->quantity[$index] * $request->price[$index],
+                ]);
+            }
+
+            \DB::commit();
+
+            return redirect()->route('inventory.status')->with('success', '✅ Order created successfully!');
+        
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return back()->withErrors(['error' => '❌ Order failed: ' . $e->getMessage()]);
         }
-    
-        return redirect()->route('inventory.status')->with('success', 'Order created successfully!');
     }
-    
+
+    public function index()
+    {
+        $orders = Order::with('customer')->latest()->paginate(10);
+        return view('orders.index', compact('orders'));
+    }
+
+    public function show($id)
+    {
+        $order = Order::with(['customer', 'orderDetails.product'])->findOrFail($id);
+        return view('orders.show', compact('order'));
+    }
+
 }
 

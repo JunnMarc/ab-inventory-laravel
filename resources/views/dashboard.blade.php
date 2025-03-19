@@ -1,8 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Dashboard') }}
+            </h2>
+            <a href="{{ route('orders.create') }}" 
+               class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
+                ➕ Create an Order
+            </a>
+        </div>
     </x-slot>
     
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -64,4 +70,5 @@
                 </div>
             @endif
         </div>
+    </div>
 </x-app-layout>

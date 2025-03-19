@@ -13,7 +13,7 @@ class InventoryMovementsController extends Controller
     {
         $movements = InventoryMovement::with(['product', 'employee', 'supplier'])->latest()->get(); 
         $employees = Employee::all();
-        $products = Products::all(); // Use Product, not Products
+        $products = Products::all();
 
         return view('inventory_movements.index', compact('movements', 'employees', 'products'));
     }

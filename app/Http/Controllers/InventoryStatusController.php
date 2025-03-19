@@ -21,14 +21,14 @@ class InventoryStatusController extends Controller
         $products = $query->get();
 
         $inventoryMovements = InventoryMovement::with('product')
-            ->when($request->date, function ($q) use ($request) {
-                return $q->whereDate('date', $request->date);
+            ->when(request('date'), function ($query) {
+                $query->whereDate('date', request('date'));
             })
-            ->when($request->product, function ($q) use ($request) {
-                return $q->where('product_id', $request->product);
+            ->when(request('product'), function ($query) {
+                $query->where('product_id', request('product'));
             })
-            ->latest()
-            ->paginate(10); // ✅ Pagination for Inventory Movements
+            ->orderByDesc('date')
+            ->paginate(5); 
 
         $lowStockAlerts = DB::table('vw_low_stock_alerts')->get();
 
@@ -45,7 +45,7 @@ class InventoryStatusController extends Controller
                 });
             })
             ->orderByDesc('order_date')
-            ->paginate(5); // ✅ Pagination for Recent Sales
+            ->paginate(5); 
 
         return view('inventory.status', compact('products', 'inventoryMovements', 'lowStockAlerts', 'sales'));
     }
@@ -68,7 +68,7 @@ class InventoryStatusController extends Controller
                 });
             })
             ->orderByDesc('order_date')
-            ->paginate(10); // ✅ Paginated results for large data
+            ->paginate(10); 
 
         $products = Products::all(); // Fetch all products for filtering options
 
@@ -76,7 +76,9 @@ class InventoryStatusController extends Controller
             ->orderByDesc('total_sold')
             ->paginate(5); 
 
-        return view('inventory.sales', compact('salesQuery', 'products', 'bestSellingProducts'));
+        $salesSummary = DB::table('vw_sales_summary')->first();
+
+        return view('inventory.sales', compact('salesQuery', 'products', 'bestSellingProducts', 'salesSummary'));
     }
 
 }

@@ -18,7 +18,7 @@ return new class extends Migration {
                 c.name AS customer_name,
                 c.phone AS customer_phone,
                 c.address AS customer_address,
-                e.name AS sold_by,
+                e.employee_name AS sold_by,
                 SUM(od.quantity) AS total_quantity_sold,
                 SUM(od.total) AS total_sales_value
             FROM orders o
@@ -31,7 +31,7 @@ return new class extends Migration {
                 c.name, 
                 c.phone, 
                 c.address, 
-                e.name
+                e.employee_name
         ");
 
         // Create the vw_best_selling_products view
@@ -65,9 +65,8 @@ return new class extends Migration {
             WHERE p.quantity <= p.stock_alert_threshold
         ");
 
-        // Create the after_order_details_insert trigger
+        // Create the after_order_details_insert trigger (without DELIMITER)
         DB::unprepared("
-            DELIMITER //
             CREATE TRIGGER after_order_details_insert
             AFTER INSERT ON order_details
             FOR EACH ROW
@@ -113,10 +112,7 @@ return new class extends Migration {
                     new_inventory,  -- Updated stock
                     transaction_type  -- 'SALE'
                 );
-
             END;
-            //
-            DELIMITER ;
         ");
     }
 

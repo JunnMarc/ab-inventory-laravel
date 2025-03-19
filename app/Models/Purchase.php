@@ -12,6 +12,7 @@ class Purchase extends Model
     protected $fillable = [
         'purchase_date',
         'supplier_id',
+        'employee_id',
         'reference',
     ];
 
@@ -23,6 +24,10 @@ class Purchase extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    
+    public function employee() {
+        return $this->belongsTo(Employee::class);
     }
 }
 

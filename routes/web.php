@@ -36,9 +36,10 @@ Route::resource('products', ProductController::class);
 Route::resource('employees', EmployeeController::class);
 
 Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
 Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
 
-Route::resource('order-details', OrderDetailController::class);
 Route::resource('customers', CustomerController::class);
 
 Route::resource('suppliers', SupplierController::class);

@@ -42,7 +42,6 @@
 
                 {{-- Products Section --}}
                 <div class="bg-white shadow-lg rounded-lg p-6">
-                    {{-- Filters --}}
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-semibold text-gray-700">📦 Product Inventory</h2>
                         <form method="GET" action="{{ route('inventory.status') }}" class="flex gap-4">
@@ -115,15 +114,15 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($inventoryMovements as $movement) {{-- Pagination applied here --}}
+                                @foreach($inventoryMovements as $movement) 
                                     <tr class="hover:bg-gray-100 transition">
                                         <td class="px-4 py-3">{{ $movement->product->product_name }}</td>
                                         <td class="px-4 py-3">{{ $movement->date }}</td>
                                         <td class="px-4 py-3 font-semibold">
-                                            @if($movement->type === 'STACK_IN')
-                                                <span class="text-green-600">🟢 STACK_IN</span>
-                                            @elseif($movement->type === 'SALE')
-                                                <span class="text-red-600">🔴 SALE</span>
+                                            @if($movement->transaction_type === 'STACK_IN')
+                                                <span class="text-blue-600">🔵 STACK IN</span>
+                                            @elseif($movement->transaction_type === 'SALE')
+                                                <span class="text-green-600">🟢 SALE</span>
                                             @endif
                                         </td>
                                         <td class="px-4 py-3">{{ $movement->balance_forwarded }}</td>
@@ -131,7 +130,6 @@
                                         <td class="px-4 py-3 font-semibold text-green-600">{{ $movement->new_luto }}</td>
                                         <td class="px-4 py-3">{{ $movement->total_inventory }}</td>
                                         <td class="px-4 py-3">
-                                            {{-- Delete Button --}}
                                             <form action="{{ route('inventory_movements.destroy', $movement->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                 @csrf
                                                 @method('DELETE')

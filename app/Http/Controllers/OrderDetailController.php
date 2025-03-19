@@ -10,7 +10,7 @@ class OrderDetailController extends Controller
     public function index()
     {
         $orderDetails = OrderDetail::with(['order', 'product'])->get();
-        return view('order_details.index', compact('orderDetails'));
+        return view('orders.index', compact('orderDetails'));
     }
 }
 

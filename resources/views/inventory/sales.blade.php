@@ -3,7 +3,6 @@
         {{-- Sales Report Header --}}
         <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-700">📈 Sales Report Overview</h2>
-            <p class="text-gray-500">Filter sales data and analyze trends.</p>
         </div>
 
         {{-- Filters Section --}}
@@ -22,42 +21,11 @@
                 </select>
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Filter</button>
             </form>
-        </div> --}}
+        </div> --}
 
-        {{-- Sales Data Table --}}
-        <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">🛒 Recent Sales Transactions</h3>
-            <div class="overflow-x-auto">
-                <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
-                    <thead>
-                        <tr class="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
-                            <th class="px-4 py-2 text-left">Order Date</th>
-                            <th class="px-4 py-2 text-left">Customer</th>
-                            <th class="px-4 py-2 text-left">Employee</th>
-                            <th class="px-4 py-2 text-left">Total Quantity</th>
-                            <th class="px-4 py-2 text-left">Total Sales</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($salesQuery as $sale)
-                            <tr class="hover:bg-gray-100 transition">
-                                <td class="px-4 py-3">{{ $sale->order_date }}</td>
-                                <td class="px-4 py-3">{{ $sale->customer_name }}</td>
-                                <td class="px-4 py-3">{{ $sale->sold_by }}</td>
-                                <td class="px-4 py-3">{{ $sale->total_quantity_sold }}</td>
-                                <td class="px-4 py-3 font-semibold text-green-600">{{ number_format($sale->total_sales_value, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">
-                {{ $salesQuery->links() }}
-            </div>
-        </div>
 
-        {{-- Future Sales Insights (Expandable Sections) --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+         {{-- Future Sales Insights (Expandable Sections) --}}
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {{-- Best-Selling Products --}}
             <div class="bg-white shadow-lg rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-700">🏆 Best-Selling Products</h3>
@@ -85,29 +53,76 @@
                 <div class="mt-4">
                     {{ $bestSellingProducts->links() }}
                 </div>
-            </div>            
+            </div>           
 
-            {{-- Top Customers --}}
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-700">👤 Top Customers</h3>
-                <p class="text-gray-500">Customers with highest purchase values.</p>
-                <ul class="mt-4 text-gray-700">
-                    {{-- Sample placeholder data --}}
-                    <li class="border-b py-2">John Doe - <span class="font-bold">₱10,000</span></li>
-                    <li class="border-b py-2">Jane Smith - <span class="font-bold">₱9,500</span></li>
-                    <li class="py-2">Michael Lee - <span class="font-bold">₱9,000</span></li>
-                </ul>
-            </div>
+            {{-- 📊 Sales Summary --}}
+            <div class="bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg rounded-lg p-6 text-white">
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                    📊 Sales Summary
+                </h3>
+                <p class="text-sm opacity-80">Overview of sales performance.</p>
 
-            {{-- Sales Summary --}}
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-700">📊 Sales Summary</h3>
-                <p class="text-gray-500">Total sales and revenue insights.</p>
-                <div class="mt-4">
-                    <p class="text-gray-700">Total Revenue: <span class="font-bold text-green-600">₱50,000</span></p>
-                    <p class="text-gray-700">Total Orders: <span class="font-bold">120</span></p>
-                    <p class="text-gray-700">Average Order Value: <span class="font-bold">₱416.67</span></p>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg flex items-center gap-4">
+                        <div class="bg-green-600 p-3 rounded-full">
+                            💰
+                        </div>
+                        <div>
+                            <p class="text-sm opacity-80">Total Revenue</p>
+                            <p class="text-xl font-bold">₱{{ number_format($salesSummary->total_revenue ?? 0, 2) }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg flex items-center gap-4">
+                        <div class="bg-blue-600 p-3 rounded-full">
+                            📦
+                        </div>
+                        <div>
+                            <p class="text-sm opacity-80">Total Orders</p>
+                            <p class="text-xl font-bold">{{ $salesSummary->total_orders ?? 0 }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg flex items-center gap-4">
+                        <div class="bg-yellow-500 p-3 rounded-full">
+                            📤
+                        </div>
+                        <div>
+                            <p class="text-sm opacity-80">Total Products Sold</p>
+                            <p class="text-xl font-bold">{{ $salesSummary->total_products_sold ?? 0 }}</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        {{-- Sales Data Table --}}
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">🛒 Recent Sales Transactions</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+                            <th class="px-4 py-2 text-left">Order Date</th>
+                            <th class="px-4 py-2 text-left">Customer</th>
+                            <th class="px-4 py-2 text-left">Sold By</th>
+                            <th class="px-4 py-2 text-left">Total Quantity</th>
+                            <th class="px-4 py-2 text-left">Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($salesQuery as $sale)
+                            <tr class="hover:bg-gray-100 transition">
+                                <td class="px-4 py-3">{{ $sale->order_date }}</td>
+                                <td class="px-4 py-3">{{ $sale->customer_name }}</td>
+                                <td class="px-4 py-3">{{ $sale->sold_by }}</td>
+                                <td class="px-4 py-3">{{ $sale->total_quantity_sold }}</td>
+                                <td class="px-4 py-3 font-semibold text-green-600">{{ number_format($sale->total_sales_value, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4">
+                {{ $salesQuery->links() }}
             </div>
         </div>
     </div>

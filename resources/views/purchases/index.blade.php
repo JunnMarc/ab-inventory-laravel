@@ -21,8 +21,8 @@
                             <tr class="bg-gray-100">
                                 <th class="py-2 px-4 border">Date</th>
                                 <th class="py-2 px-4 border">Supplier</th>
+                                <th class="py-2 px-4 border">Company</th>
                                 <th class="py-2 px-4 border">Reference</th>
-                                <th class="py-2 px-4 border">Total Items</th>
                                 <th class="py-2 px-4 border">Actions</th>
                             </tr>
                         </thead>
@@ -31,10 +31,10 @@
                             <tr class="border-b">
                                 <td class="py-2 px-4 border">{{ $purchase->purchase_date }}</td>
                                 <td class="py-2 px-4 border">{{ $purchase->supplier->suppliers_name }}</td>
+                                <td class="py-2 px-4 border">{{ $purchase->supplier->suppliers_company }}</td>
                                 <td class="py-2 px-4 border">{{ $purchase->reference }}</td>
-                                <td class="py-2 px-4 border">{{ $purchase->details->sum('quantity') }}</td>
                                 <td class="py-2 px-4 border flex space-x-2">
-                                    <a href="{{ route('purchases.show', $purchase->id) }}" class="text-blue-500">View</a>
+                                    <a href="{{ route('purchases.show', $purchase->id) }}" class="text-blue-500">View Details</a>
                                     {{-- <a href="{{ route('purchases.edit', $purchase->id) }}" class="text-yellow-500">Edit</a> --}}
                                     <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                         @csrf

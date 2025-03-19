@@ -7,9 +7,12 @@
 
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-            <a href="{{ route('suppliers.create') }}" class="mb-4 inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                Add New Supplier
-            </a>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Supplier List</h3>
+                <a href="{{ route('suppliers.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    + Add New Supplier
+                </a>
+            </div>
 
             <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 mt-4">
                 <thead>

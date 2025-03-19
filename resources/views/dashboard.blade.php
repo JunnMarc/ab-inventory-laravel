@@ -1,15 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center w-full">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Dashboard') }}
             </h2>
-            <a href="{{ route('orders.create') }}" 
-               class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
-                ➕ Create an Order
-            </a>
+            <div class="flex space-x-4 ml-auto"> <!-- This container will hold the buttons and align them to the right -->
+                <a href="{{ route('orders.create') }}" 
+                   class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
+                    🛍️ Order
+                </a>
+                <a href="{{ route('purchases.create') }}" 
+                   class="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
+                    📥 Purchase
+                </a>
+            </div>
         </div>
-    </x-slot>
+    </x-slot>    
     
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Cards Section -->

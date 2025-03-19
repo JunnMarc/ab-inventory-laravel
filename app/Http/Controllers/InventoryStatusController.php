@@ -52,7 +52,7 @@ class InventoryStatusController extends Controller
 
     public function salesReport(Request $request)
     {
-        $salesQuery = DB::table('vw_recent_sales')
+        $salesQuery = DB::table('vw_recent_sales') //recent sales
             ->when($request->start_date, function ($q) use ($request) {
                 return $q->whereDate('order_date', '>=', $request->start_date);
             })
@@ -70,9 +70,9 @@ class InventoryStatusController extends Controller
             ->orderByDesc('order_date')
             ->paginate(10); 
 
-        $products = Products::all(); // Fetch all products for filtering options
+        $products = Products::all(); 
 
-        $bestSellingProducts = DB::table('vw_best_selling_products')
+        $bestSellingProducts = DB::table('vw_best_selling_products') // best selling view
             ->orderByDesc('total_sold')
             ->paginate(5); 
 

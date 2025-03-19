@@ -67,7 +67,7 @@ class OrderController extends Controller
 
             \DB::commit();
 
-            return redirect()->route('inventory.status')->with('success', '✅ Order created successfully!');
+            return redirect()->route('orders.index')->with('success', '✅ Order created successfully!');
         
         } catch (\Exception $e) {
             \DB::rollback();

@@ -34,11 +34,40 @@
                     </div>
                 </header>
             @endisset
+    <div x-data="{ openSidebar: false }">
+        <!-- Sidebar Toggle Button -->
+        <button @click="openSidebar = !openSidebar" 
+            class="p-2 bg-gray-800 text-white rounded-md fixed top-4 left-4 z-50">
+            ☰
+        </button>
 
-            <!-- Page Content -->
-            <main>
+        <!-- Overlay (Click outside to close) -->
+        <div x-show="openSidebar" 
+             x-cloak 
+             @click="openSidebar = false"
+             class="fixed inset-0 bg-black bg-opacity-50 z-30">
+        </div>
+
+        <!-- Sidebar -->
+        <div x-show="openSidebar" 
+             x-cloak 
+             @keydown.escape.window="openSidebar = false" 
+             x-transition:enter="transition ease-out duration-200 transform"
+             x-transition:enter-start="-translate-x-full opacity-0"
+             x-transition:enter-end="translate-x-0 opacity-100"
+             x-transition:leave="transition ease-in duration-150 transform"
+             x-transition:leave-start="translate-x-0 opacity-100"
+             x-transition:leave-end="-translate-x-full opacity-0"
+             class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-900 shadow-lg z-40">
+            <x-sidebar>
                 {{ $slot }}
-            </main>
+            </x-sidebar>
+        </div>
+    </div>
+
+    <div class="min-h-screen">
+        {{ $slot }} <!-- Your Page Content -->
+    </div>
         </div>
     </body>
 </html>
